@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:layout_margin="16dp">
+
+
+
+    <TextView
+        android:id="@+id/Name"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="NAME"
+        android:layout_alignParentTop="true"
+
+        />
+
+    <TextView
+        android:text="POINT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/Rate"/>
+
+    <TextView
+        android:text="GENRE"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Name"
+        android:layout_alignLeft="@+id/Name"
+        android:layout_alignStart="@+id/Name"
+        android:id="@+id/Genre"/>
+
+    <!--<ImageView-->
+    <!--android:layout_width="80dp"-->
+    <!--android:layout_height="20dp"-->
+    <!--app:srcCompat="@drawable/icon_coin_4"-->
+    <!--android:layout_below="@+id/tv_favorite_name"-->
+    <!--android:layout_toRightOf="@+id/textView3"-->
+    <!--android:id="@+id/imageView2"/>-->
+
+    <TextView
+        android:text="DISTANCE"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Genre"
+        android:layout_alignLeft="@+id/Genre"
+        android:layout_alignStart="@+id/Genre"
+        android:id="@+id/Distance"/>
+
+    <TextView
+        android:text="COMMENT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Distance"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/Description"/>
+
+    <TextView
+        android:text="LAT"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Description"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/Lat"/>
+
+    <TextView
+        android:text="LNG"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Lat"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/Lng"/>
+
+
+</RelativeLayout>
