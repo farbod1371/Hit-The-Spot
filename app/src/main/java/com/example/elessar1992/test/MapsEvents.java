@@ -285,10 +285,13 @@ public class MapsEvents extends FragmentActivity implements OnMapReadyCallback
         try {
             if (mLocationPermissionGranted) {
                 Task locationResult = mFusedLocationProviderClient.getLastLocation();
-                locationResult.addOnCompleteListener(this, new OnCompleteListener() {
+                locationResult.addOnCompleteListener(this, new OnCompleteListener()
+                {
                     @Override
-                    public void onComplete(@NonNull Task task) {
-                        if (task.isSuccessful()) {
+                    public void onComplete(@NonNull Task task)
+                    {
+                        if (task.isSuccessful())
+                        {
                             // Set the map's camera position to the current location of the device.
                             mLastKnownLocation = (Location) task.getResult();
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
@@ -299,7 +302,9 @@ public class MapsEvents extends FragmentActivity implements OnMapReadyCallback
                             String lng = Double.toString(mLastKnownLocation.getLongitude());
 
                             ll = lat + ',' +lng;
-                        } else {
+                        }
+                        else
+                        {
                             Log.d(TAG, "Current location is null. Using defaults.");
                             Log.e(TAG, "Exception: %s", task.getException());
 
@@ -338,6 +343,7 @@ public class MapsEvents extends FragmentActivity implements OnMapReadyCallback
     List<LatLng> list = new ArrayList<>();
     List<String> nameList = new ArrayList<>();
     List<Double> ratingList = new ArrayList<>();
+    List<String> priceList = new ArrayList<>();
     MarkerOptions markerOptions = new MarkerOptions();
 
     private void build_retrofit_and_get_response(String query)
@@ -352,27 +358,103 @@ public class MapsEvents extends FragmentActivity implements OnMapReadyCallback
             {
                 try
                 {
-                    //mMap.clear();
+                    list.clear();
+                    nameList.clear();
+                    ratingList.clear();
+                    priceList.clear();
+                    mMap.clear();
                     Log.i(TAG, "onResponse:"+ response.body().getResponse().getGroups().get(0).getItems().size());
-                    for (int i = 0; i < response.body().getResponse().getGroups().get(0).getItems().size(); i++){
+                    Double rating = null;
+                    int tier;
+                    String tierr = null;
+                    for (int i = 0; i < response.body().getResponse().getGroups().get(0).getItems().size(); i++)
+                    {
                         double lat = response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getLocation().getLat();
                         double lng = response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getLocation().getLng();
                         String name = response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getName();
-                        //int teir = response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getPrice().getTier();
-                        //Log.i(TAG, "onResponse: tier is " + teir);
-                        double rating = response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getRating();
+
+                        if(response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getPrice() == null){
+                            tier = 0;
+                        } else{
+                            tier = response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getPrice().getTier();
+                            Log.i(TAG, "onResponse: tier is " + response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getPrice().getTier());
+                        }
+                        //tier = response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getPrice();
+                        Log.i(TAG, "onResponse: tier is " + response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getPrice());
+
+
+                        if(tier == 0)
+                        {
+                            tierr = "null";
+                        }
+                        else if(tier == 1)
+                        {
+                            tierr ="$";
+                        }
+                        else if(tier ==2)
+                        {
+                            tierr = "$$";
+                        }
+                        else if(tier == 3)
+                        {
+                            tierr = "$$$";
+                        }
+                        else if(tier ==4)
+                        {
+                            tierr = "$$$$";
+                        }
+                        else if(tier == 5)
+                        {
+                            tierr = "$$$$$";
+                        }
+
+                        //response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().setRating(2.0);
+                        rating = response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getRating();
+
+                        Log.i(TAG, "onResponse: rating is " + rating);
 
                         ratingList.add(rating);
                         nameList.add(name);
                         LatLng latLng = new LatLng(lat, lng);
                         list.add(latLng);
+                        priceList.add(tierr);
                     }
 
-                    for(int i = 0; i < list.size(); i ++) {
+                    for(int i = 0; i < list.size(); i ++)
+                    {
+
                         markerOptions.position(list.get(i));
                         markerOptions.title(nameList.get(i));
-                        markerOptions.snippet("Rating is "+ ratingList.get(i).toString() + " stars");
+                        if(ratingList.get(i) == null)
+                        {
+                            if(priceList.get(i) == "null")
+                            {
+                                markerOptions.snippet("Is not rated yet" + "Rating is " + priceList.get(i).toString() + " stars " + "No price Yet");
+                            }
+                            else
+                            {
+                                markerOptions.snippet("Is not rated yet" + "Price is " + priceList.get(i).toString());
+                            }
+
+                        }
+                        else
+                        {
+                            if(priceList.get(i) == "null")
+                            {
+                                markerOptions.snippet("Rating is " + ratingList.get(i).toString() + " stars " + "No price Yet");
+                            }
+                            else
+                            {
+                                markerOptions.snippet("Rating is " + ratingList.get(i).toString() + " stars " + "Price is " + priceList.get(i).toString());
+                            }
+
+                        }
+
+
+
+
                         mMap.addMarker(markerOptions);
+
                     }
 
 //                    for(LatLng point : list) {
