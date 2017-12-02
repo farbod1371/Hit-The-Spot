@@ -1,4 +1,5 @@
 package com.example.elessar1992.test;
+import com.example.elessar1992.test.Model.Photo;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -7,6 +8,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
@@ -35,6 +37,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -57,7 +60,7 @@ import retrofit2.Response;
  * Created by elessar1992 on 11/22/17.
  */
 
-public class MapsEvents extends FragmentActivity implements OnMapReadyCallback
+public class MapsEvents extends FragmentActivity implements OnMapReadyCallback,GoogleMap.OnInfoWindowClickListener
 {
 
     private static final String TAG = MapsEvents.class.getSimpleName();
@@ -76,29 +79,19 @@ public class MapsEvents extends FragmentActivity implements OnMapReadyCallback
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private boolean mLocationPermissionGranted;
     private Location mLastKnownLocation;
-    static LatLng latilong;
-
-    double latitude;
-    double longitude;
-    private int PROXIMITY_RADIUS = 10000;
-    GoogleApiClient mGoogleApiClient;
-    Location mLastLocation;
-    Marker mCurrLocationMarker;
-    LocationRequest mLocationRequest;
     String Client_ID = "BSQDX22EU4YYHOGSSPF2NHFC4QWNM1XWYNRUTTWRB3DJTBPW";
     String Client_Secret = "IRP4Y2X0CENP0QDV24ASTRG3M4WTYUPPPE2YMKO2CVVSXRJV";
     String apiVersion = "20130815";
-    //String geoLocation = "40.7,-74";
+
 
     String ll;
-    //Double lat = mLastKnownLocation.getLatitude();
-    //Double lng = mLastKnownLocation.getLongitude();
 
     String query;
-    String radius = "1000";
+    String radius = "3000";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
@@ -109,12 +102,6 @@ public class MapsEvents extends FragmentActivity implements OnMapReadyCallback
 
         // Construct a FusedLocationProviderClient.
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
-        //View view;
-        //PopupMenu popupMenu = new PopupMenu(MapsEvents.this, view);
-        //popupMenu.setOnMenuItemClickListener(MapsEvents.this);
-        //popupMenu.inflate(R.menu.popup_menu);
-        //popupMenu.show();
 
         //Initialize Google Play Services
         Button Restaurant = (Button) findViewById(R.id.Restaurant);
@@ -196,28 +183,29 @@ public class MapsEvents extends FragmentActivity implements OnMapReadyCallback
 
 
     @Override
-    public void onMapReady(GoogleMap googleMap)
-    {
-        mMap = googleMap;
+public void onMapReady(GoogleMap googleMap)
+{
+    mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        //LatLng sydney = new LatLng( );
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    // Add a marker in Sydney and move the camera
+    LatLng sydney = new LatLng(-34, 151);
+    //LatLng sydney = new LatLng( );
+    mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+    mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
-        updateLocationUI();
+    updateLocationUI();
 
-        getDeviceLocation();
+    getDeviceLocation();
 
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
+    if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        // TODO: Consider calling
 
-            return;
-        }
-        mMap.setMyLocationEnabled(true);
+        return;
     }
+    mMap.setMyLocationEnabled(true);
+    mMap.setOnInfoWindowClickListener(this);
+}
 
 
     private void getLocationPermission()
@@ -257,33 +245,44 @@ public class MapsEvents extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    private void updateLocationUI() {
-        if (mMap == null) {
+    private void updateLocationUI()
+    {
+        if (mMap == null)
+        {
             return;
         }
-        try {
-            if (mLocationPermissionGranted) {
+        try
+        {
+            if (mLocationPermissionGranted)
+            {
                 mMap.setMyLocationEnabled(true);
                 mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            } else {
+            }
+            else
+            {
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
                 mLastKnownLocation = null;
                 getLocationPermission();
             }
-        } catch (SecurityException e) {
+        }
+        catch (SecurityException e)
+        {
             Log.e("Exception: %s", e.getMessage());
         }
     }
 
 
-    private void getDeviceLocation() {
+    private void getDeviceLocation()
+    {
     /*
      * Get the best and most recent location of the device, which may be null in rare
      * cases when a location is not available.
      */
-        try {
-            if (mLocationPermissionGranted) {
+        try
+        {
+            if (mLocationPermissionGranted)
+            {
                 Task locationResult = mFusedLocationProviderClient.getLastLocation();
                 locationResult.addOnCompleteListener(this, new OnCompleteListener()
                 {
@@ -315,36 +314,24 @@ public class MapsEvents extends FragmentActivity implements OnMapReadyCallback
 
                 });
             }
-        } catch (SecurityException e) {
+        }
+        catch (SecurityException e)
+        {
             Log.e("Exception: %s", e.getMessage());
         }
     }
 
-
-
-    /*public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.item_comedy:
-                Toast.makeText(this, "Comedy Clicked", Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.item_movies:
-                Toast.makeText(this, "Movies Clicked", Toast.LENGTH_SHORT).show();
-                return true;
-            case R.id.item_music:
-                Toast.makeText(this, "Music Clicked", Toast.LENGTH_SHORT).show();
-                return true;
-        }
-
-        return true;
-    }*/
-
-
-
     List<LatLng> list = new ArrayList<>();
     List<String> nameList = new ArrayList<>();
+    List<String> descriptionList = new ArrayList<>();
     List<Double> ratingList = new ArrayList<>();
     List<String> priceList = new ArrayList<>();
     MarkerOptions markerOptions = new MarkerOptions();
+    //String description;
+    String name;
+    double lat;
+    double lng;
+    //String description;
 
     private void build_retrofit_and_get_response(String query)
     {
@@ -369,18 +356,21 @@ public class MapsEvents extends FragmentActivity implements OnMapReadyCallback
                     String tierr = null;
                     for (int i = 0; i < response.body().getResponse().getGroups().get(0).getItems().size(); i++)
                     {
-                        double lat = response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getLocation().getLat();
-                        double lng = response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getLocation().getLng();
-                        String name = response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getName();
-
-                        if(response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getPrice() == null){
+                        lat = response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getLocation().getLat();
+                        lng = response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getLocation().getLng();
+                        name = response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getName();
+                        //description = response.body().getResponse().getGroups().get(0).getItems().get(i).getTips().get(i).getText();
+                        if(response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getPrice() == null)
+                        {
                             tier = 0;
-                        } else{
+                        }
+                        else
+                        {
                             tier = response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getPrice().getTier();
                             Log.i(TAG, "onResponse: tier is " + response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getPrice().getTier());
                         }
                         //tier = response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getPrice();
-                        Log.i(TAG, "onResponse: tier is " + response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getPrice());
+                        //Log.i(TAG, "onResponse: tier is " + response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getPrice());
 
 
                         if(tier == 0)
@@ -411,10 +401,11 @@ public class MapsEvents extends FragmentActivity implements OnMapReadyCallback
                         //response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().setRating(2.0);
                         rating = response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getRating();
 
-                        Log.i(TAG, "onResponse: rating is " + rating);
+                        //Log.i(TAG, "onResponse: rating is " + rating);
 
                         ratingList.add(rating);
                         nameList.add(name);
+                        //descriptionList.add(description);
                         LatLng latLng = new LatLng(lat, lng);
                         list.add(latLng);
                         priceList.add(tierr);
@@ -450,46 +441,9 @@ public class MapsEvents extends FragmentActivity implements OnMapReadyCallback
 
                         }
 
-
-
-
                         mMap.addMarker(markerOptions);
 
                     }
-
-//                    for(LatLng point : list) {
-//                        markerOptions.position(point);
-//                        markerOptions.title("");
-//                        mMap.addMarker(markerOptions);
-//                    }
-//
-//                    for (int i = 0; i < response.body().getResponse().getGroups().get(0).getItems().size(); i++)
-//                    {
-//
-//                        //for(int j = 0; j < locations.size(); j++)
-//                        //{
-//                        MarkerOptions markerOptions = new MarkerOptions();
-//                        //double lat = response.body().getResponse().getGroups().get(i).getItems().get(i).getVenue().getLocation().getLat();
-//                        //double lng = response.body().getResponse().getGroups().get(i).getItems().get(i).getVenue().getLocation().getLng();
-//                        double lat = response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getLocation().getLabeledLatLngs().get(i).getLat();
-//                        double lng = response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getLocation().getLabeledLatLngs().get(i).getLng();
-//                        String name = response.body().getResponse().getGroups().get(0).getItems().get(i).getVenue().getName();
-//                        //double rating = response.body().getResponse().getGroups().get(i).getItems().get(i).getVenue().getRating();
-//                        //Integer tier = response.body().getResponse().getGroups().get(i).getItems().get(i).getVenue().getPrice().getTier();
-//                        //String currency = response.body().getResponse().getGroups().get(i).getItems().get(i).getVenue().getPrice().getCurrency();
-//                        LatLng latLng = new LatLng(lat, lng);
-//                        //latlngs.add(new LatLng(lat, lng));
-//                        //markerOptions.position(latLng) shows the location
-//                        markerOptions.position(latLng);
-//                        markerOptions.title(name);
-//                        mMap.addMarker(markerOptions);
-//                        //Marker m = mMap.addMarker(markerOptions);
-//                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-//                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-//                        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
-//                        // --------------------
-//                        //}
-//                    }
 
                 }
                 catch (Exception e)
@@ -500,7 +454,6 @@ public class MapsEvents extends FragmentActivity implements OnMapReadyCallback
             }
 
 
-
             @Override
             public void onFailure(Call<Explore> call, Throwable t)
             {
@@ -509,5 +462,11 @@ public class MapsEvents extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    @Override
+    public void onInfoWindowClick(Marker marker)
+    {
+        Toast.makeText(this, "Info window clicked",
+                Toast.LENGTH_SHORT).show();
+    }
 
 }
