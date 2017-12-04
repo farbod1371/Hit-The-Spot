@@ -40,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
 	List<Item_> item_list = new ArrayList<Item_>();*/
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		start = (Button) findViewById(R.id.start);

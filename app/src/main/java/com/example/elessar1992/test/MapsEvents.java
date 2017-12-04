@@ -1,5 +1,4 @@
 package com.example.elessar1992.test;
-import com.example.elessar1992.test.Model.Photo;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -24,31 +23,23 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.places.PlaceDetectionClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.PopupMenuCompat;
 import android.util.Log;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
 
 import com.example.elessar1992.test.Model.Explore;
 import com.example.elessar1992.test.Service.FourSquareService;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import android.widget.PopupMenu.OnMenuItemClickListener;
 
+import java.util.HashMap;
 import java.util.List;
 
 import retrofit2.Call;
@@ -60,7 +51,7 @@ import retrofit2.Response;
  * Created by elessar1992 on 11/22/17.
  */
 
-public class MapsEvents extends FragmentActivity implements OnMapReadyCallback,GoogleMap.OnInfoWindowClickListener
+public class MapsEvents extends FragmentActivity implements OnMapReadyCallback//,GoogleMap.OnInfoWindowClickListener
 {
 
     private static final String TAG = MapsEvents.class.getSimpleName();
@@ -68,6 +59,7 @@ public class MapsEvents extends FragmentActivity implements OnMapReadyCallback,G
     private GoogleMap mMap;
     private List<Marker> locations = new ArrayList<>();
     //private MarkerOptions markerOptions = new MarkerOptions();
+    TextView myname;
 
     protected GeoDataClient mGeoDataClient;
     protected PlaceDetectionClient mPlaceDetectionClient;
@@ -105,6 +97,7 @@ public class MapsEvents extends FragmentActivity implements OnMapReadyCallback,G
 
         //Initialize Google Play Services
         Button Restaurant = (Button) findViewById(R.id.Restaurant);
+        myname = (TextView) findViewById(R.id.name);
         Restaurant.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
@@ -203,9 +196,48 @@ public void onMapReady(GoogleMap googleMap)
 
         return;
     }
+
+
     mMap.setMyLocationEnabled(true);
-    mMap.setOnInfoWindowClickListener(this);
+    mMap.setOnInfoWindowClickListener(
+            new GoogleMap.OnInfoWindowClickListener()
+            {
+                public void onInfoWindowClick(Marker marker)
+                {
+                    Intent nextScreen = new Intent(MapsEvents.this,ShowEvent.class);
+                    startActivityForResult(nextScreen, 0);
+                }
+            });
+    //mMap.setOnInfoWindowClickListener(this);
+    //if(mMap != null)
+    //{
+        /*mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter()
+        {
+            @Override
+            public View getInfoWindow(Marker marker)
+            {
+                return null;
+            }
+
+            /*@Override
+            public View getInfoContents(Marker marker)
+            {
+                View v = getLayoutInflater().inflate(R.layout.activity_information,null);
+                TextView name = (TextView) v.findViewById(R.id.name);
+                TextView rating = (TextView) v.findViewById(R.id.rating);
+                TextView price = (TextView) v.findViewById(R.id.price);
+                name.setText(marker.getTitle());
+                rating.setText(marker.getSnippet());
+                price.setText(marker.getSnippet());
+                return v;
+            }
+        });
+    //}*/
+    //mMap.setInfoWindowAdapter(new UserInfoWindowAdapter(getLayoutInflater()));
+
+
 }
+
 
 
     private void getLocationPermission()
@@ -327,11 +359,12 @@ public void onMapReady(GoogleMap googleMap)
     List<Double> ratingList = new ArrayList<>();
     List<String> priceList = new ArrayList<>();
     MarkerOptions markerOptions = new MarkerOptions();
-    //String description;
+    HashMap<Marker, String> markerHolderMap = new HashMap<>();
+    LatLng latLng;
+    String description;
     String name;
     double lat;
     double lng;
-    //String description;
 
     private void build_retrofit_and_get_response(String query)
     {
@@ -406,7 +439,7 @@ public void onMapReady(GoogleMap googleMap)
                         ratingList.add(rating);
                         nameList.add(name);
                         //descriptionList.add(description);
-                        LatLng latLng = new LatLng(lat, lng);
+                        latLng = new LatLng(lat, lng);
                         list.add(latLng);
                         priceList.add(tierr);
                     }
@@ -420,7 +453,7 @@ public void onMapReady(GoogleMap googleMap)
                         {
                             if(priceList.get(i) == "null")
                             {
-                                markerOptions.snippet("Is not rated yet" + "Rating is " + priceList.get(i).toString() + " stars " + "No price Yet");
+                                markerOptions.snippet("Is not rated yet" + "Rating is " + priceList.get(i).toString() + "stars " + "No price Yet");
                             }
                             else
                             {
@@ -462,11 +495,19 @@ public void onMapReady(GoogleMap googleMap)
         });
     }
 
-    @Override
+
+
+    /*@Override
     public void onInfoWindowClick(Marker marker)
     {
-        Toast.makeText(this, "Info window clicked",
-                Toast.LENGTH_SHORT).show();
-    }
-
+        //Intent myIntent = new Intent(MapsEvents.this, ShowEvent.class);
+        //MapsEvents.this.startActivity(myIntent);
+        View v = getLayoutInflater().inflate(R.layout.activity_information,null);
+        TextView name = (TextView) v.findViewById(R.id.name);
+        TextView rating = (TextView) v.findViewById(R.id.rating);
+        name.setText(marker.getTitle());
+        rating.setText(marker.getTitle());
+        //Toast.makeText(this, "Info window clicked",
+                //Toast.LENGTH_SHORT).show();
+    }*/
 }
